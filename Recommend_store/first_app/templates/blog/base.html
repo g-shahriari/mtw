@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="{%static "base.css" %}">
+  <link rel="stylesheet" href="{%static "bootstrap4/bootstrap-4.1.3/dist/css/bootstrap.min.css" %}" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="{%static "bootstrap4/bootstrap-3.3.7/dist/css/bootstrap-theme.min.css"%}" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <script src="//cdn.jsdelivr.net/medium-editor/latest/js/medium-editor.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/medium-editor/latest/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="{%static "bootstrap4/bootstrap-4.1.3/dist/js/bootstrap.min.js"%}" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Amiri" rel="stylesheet">
+
+  <title></title>
+</head>
+
+<body >
+
+  <div class="container-float">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
+      <a class="navbar-brand" href="https://www.google.com">
+        <img src="https://www.freeiconspng.com/uploads/blogger-logo-icon-png-22.png" width="30" height="30" class="d-inline-block align-top" alt="">
+        My Blog
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse nav navbar-nav " id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'about' %}">about Me <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Category
+            </a>
+            <div class="dropdown-menu font-farsi" aria-labelledby="navbarDropdownMenuLink farsi_font">
+              <a class="dropdown-item" href="{% url 'query' num=1%}">ابزار و ساختمان</a>
+              <a class="dropdown-item" href="{% url 'query' num=2%}">پوشاک، کیف و کفش</a>
+              <a class="dropdown-item" href="{% url 'query' num=3%}">خودرو و وسایل نقلیه</a>
+              <a class="dropdown-item" href="{% url 'query' num=4%}">زیبایی و بهداشت</a>
+              <a class="dropdown-item" href="{% url 'query' num=5%}">سلامت و پزشکی</a>
+              <a class="dropdown-item" href="{% url 'query' num=6%}">صوتی و تصویری</a>
+              <a class="dropdown-item" href="{% url 'query' num=7%}">فرهنگی و هنری</a>
+              <a class="dropdown-item" href="{% url 'query' num=8%}">کودک و نوزاد</a>
+              <a class="dropdown-item" href="{% url 'query' num=9%}">لپ تاپ، کامپیوتر و لوازم اداری</a>
+              <a class="dropdown-item" href="{% url 'query' num=10%}">لوازم خانگی</a>
+              <a class="dropdown-item" href="{% url 'query' num=12%}">موبایل و تبلت</a>
+              <a class="dropdown-item" href="{% url 'query' num=13%}">هایپرمارکت</a>
+
+
+
+          <li class="nav-item dropright ">
+            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Parameters
+            </a>
+
+            <form   class="dropdown-menu" id="get_parameter" method="GET" >
+              <div class="container">
+                <div class="form-row">
+
+
+                  <div class="col col-5" >
+                    <div class="">
+                    <input type="text" class="form-control col-12" id="input_similarity_weight" placeholder="Similarity Weight" style="width:auto;">
+                    </div>
+
+
+                  </div>
+
+                  <div class="col col-5">
+                    <div class="">
+                    <input type="text" class="form-control col-12" id="input_geo_dist_weight" placeholder="Distance Weight" style="width:auto;">
+                    </div>
+
+
+                  </div>
+                  <div class="col col-2">
+
+                  <button id ="submit_form" type="submit" class="col col-12 btn btn-success float-right"  style="display: block; margin-left: auto; margin-right: auto; width:auto;" name='submit' value="submit">Submit!</button>
+                </div>
+                </div>
+
+
+
+              </div>
+
+
+
+
+            </form>
+
+
+
+          </li>
+          <li class="nav-item">
+
+
+            <!-- <div data-role="main" class=""> -->
+            <!-- <a href="#myPopup" data-rel="popup" class="nav-link ">Show Popup Form</a>
+
+              <div data-role="popup" id="myPopup" class="ui-content" style="min-width:250px;">
+                <form >
+                  <div>
+                    <h3>Login information</h3>
+                    <label for="usrnm" class="ui-hidden-accessible">Username:</label>
+                    <input type="text" name="user" id="usrnm" placeholder="Username">
+                    <label for="pswd" class="ui-hidden-accessible">Password:</label>
+                    <input type="password" name="passw" id="pswd" placeholder="Password">
+                    <label for="formControlRange">Example Range input</label>
+                    <input type="range" class="form-control-range" id="formControlRange">
+                    <input type="submit" data-inline="true" value="Log in">
+                  </div>
+                </form>
+              </div>
+            </div>
+ -->
+
+
+
+          </li>
+        </ul class="float-right">
+
+        {% if user.is_authenticated %}
+
+
+        <li class="folat-right">
+          <a class='text-light'><span class=""> Welcome: {{ user.username }} </span></a>
+        </li>
+
+        <li>
+          <a href="{% url 'logout' %}"> <img src="http://files.softicons.com/download/social-media-icons/brushed-metal-icons-by-mebaze/png/32x32/Logout-01.png" height="42" width="42" /> </a>
+        </li>
+        {% else %}
+        <li><a class="btn btn-primary float-right" href="{% url 'login' %}">Log In</a></li>
+        {% endif %}
+
+        </ul>
+
+      </div>
+
+
+
+
+    </nav>
+  </div>
+
+</div>
+
+
+
+
+{% block content %}
+{% endblock %}
+
+
+</body>
+
+</html>

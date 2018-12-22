@@ -1,0 +1,18 @@
+@import url("media/font.css");
+
+
+
+.font-farsi{
+  font-family: Yekan;
+}
+
+
+#mapid { height: 650px;
+  margin-top: 10px;
+}
+
+
+.pictureid {
+  height: 100px;
+  width: 30%;
+}
