@@ -104,7 +104,7 @@ class SimilarityUserStores():
 
 
 class GeoDistanceUSerStores():
-
+    data_query = DataBaseQuery()
     def __init__(self,user_coordinate,first_category):
         self.user_coordinate=user_coordinate
         self.first_category=first_category
@@ -113,9 +113,10 @@ class GeoDistanceUSerStores():
 
 
     def distance_geographic_between_store_and_user(self,start_id_store_id_with_first_category, end_id_store_id_with_first_category):
+        data_query=self.data_query
         user_coordinate=self.user_coordinate
         first_category=self.first_category
-        data_query = DataBaseQuery()
+
         # this query: extract stores coordinates that stores have this first category type
         get_store_coordinates=data_query.get_store_coordinates_for_this_first_category(first_category)
         # get_store_coordinates = shopping.objects.filter(
@@ -143,11 +144,11 @@ class GeoDistanceUSerStores():
 
 
     def calculate_distance_between_store_and_user_for_all_stores(self):
+        # first_category=self.first_category
+        # user_coordinate=self.user_coordinate
+        #
         first_category=self.first_category
-        user_coordinate=self.user_coordinate
-        geo_dist=GeoDistanceUSerStores(first_category,user_coordinate)
-        first_category=self.first_category
-        data_query=DataBaseQuery()
+        data_query=self.data_query
         get_store_id_based_first_category = data_query. get_store_id_based_first_category(
             first_category)
 
@@ -190,31 +191,23 @@ class GeoDistanceUSerStores():
         return dist_between_user_and_stores
 
 
-
-
-class DirectQueryToView():
-    data_query=DataBaseQuery()
-    def __init__(self,first_category):
-        self.first_category=first_category
-
-    def query_order_by_gid(self):
-        data_query=self.data_query
+    def sorted_geographic_distance(self):
         first_category=self.first_category
-
-        # this query:  extract store gid that ordered by gid( order for matching gid and distance)
-        query_order_by_gid=data_query.query_order_by_gid(first_category)
-        # query_order_by_gid = list(shopping.objects.filter(
-        #     first_category=first_category).values_list('gid').order_by('gid'))
-        return query_order_by_gid
-
-    def get_store_name_order_by_gid(self):
         data_query=self.data_query
-        first_category=self.first_category
-        get_store_name_order_by_gid=data_query.get_store_name_order_by_gid(first_category)
-        return get_store_name_order_by_gid
-
-    def get_store_coordinates(self):
-        data_query=self.data_query
-        first_category=self.first_category
+        dist_between_user_and_stores=self.calculate_distance_between_store_and_user_for_all_stores()
         get_store_coordinates=data_query.get_store_coordinates_for_this_first_category(first_category)
-        return get_store_coordinates
+        query_order_by_gid=data_query.query_order_by_gid(first_category)
+
+        list_with_gid_and_dist=list()
+        for i, j,k in zip(dist_between_user_and_stores, query_order_by_gid,get_store_coordinates):
+            list_with_gid_and_dist.append(j)
+            list_with_gid_and_dist.append(i)
+            list_with_gid_and_dist.append(k[1])
+            list_with_gid_and_dist.append(k[2])
+
+        it = iter(list_with_gid_and_dist)
+        tuple_with_gid_and_dist = zip(it, it,it,it)
+
+        sort_geographic_distance = tuple(sorted(tuple_with_gid_and_dist, key=itemgetter(1)))
+
+        return sort_geographic_distance

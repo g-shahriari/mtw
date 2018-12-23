@@ -27,7 +27,7 @@ import time
 from operator import itemgetter
 import re
 
-from data_analysis import SimilarityUserStores,GeoDistanceUSerStores,DirectQueryToView
+from data_analysis import SimilarityUserStores,GeoDistanceUSerStores
 from database_query import DataBaseQuery
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -66,7 +66,6 @@ def qet_queryset(request, num):
     #create instance from data_analysis classes
     similarity_user_store_analysis=SimilarityUserStores(user_id,first_category)
     geographic_distance_user_stores=GeoDistanceUSerStores(user_coordinate=user_coordinates,first_category=first_category)
-    direct_query=DirectQueryToView(first_category)
 
     # this func: normalized user feature space for example: user_feature_space=[1,0,2,0] => all item between 0,1 => [0.2***,0,.5***,0]
     normalized_user = similarity_user_store_analysis.normalized_user_feature_space()
@@ -74,25 +73,8 @@ def qet_queryset(request, num):
     # this func: calculate euclidean distances between normalized user feature space and all noramlized store(with this first category) feature space
     df_list = similarity_user_store_analysis.calcullate_euc_distance_between_user_store_based_first_category(normalize_user=normalized_user)
 
-    # this func: calculate distance( data has been extracted from open route services api (OSM)) between user long, lat and stores locations
-    dist_between_user_and_stores = geographic_distance_user_stores.calculate_distance_between_store_and_user_for_all_stores()
+    sort_geographic_distance=geographic_distance_user_stores.sorted_geographic_distance()
 
-
-    query_order_by_gid=direct_query.query_order_by_gid()
-    get_store_name_order_by_gid=direct_query.get_store_name_order_by_gid()
-    get_store_coordinates=direct_query.get_store_coordinates()
-
-    list_with_gid_and_dist=list()
-    for i, j,k in zip(dist_between_user_and_stores, query_order_by_gid,get_store_coordinates):
-        list_with_gid_and_dist.append(j)
-        list_with_gid_and_dist.append(i)
-        list_with_gid_and_dist.append(k[1])
-        list_with_gid_and_dist.append(k[2])
-
-    it = iter(list_with_gid_and_dist)
-    tuple_with_gid_and_dist = zip(it, it,it,it)
-
-    sort_geographic_distance = tuple(sorted(tuple_with_gid_and_dist, key=itemgetter(1)))
     store_code= [x[0] for x in sort_geographic_distance]
     store_distance=[x[1] for x in sort_geographic_distance]
     store_coordinates_longtitude=[x[2] for x in sort_geographic_distance]
