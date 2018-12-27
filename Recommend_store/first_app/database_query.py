@@ -1,4 +1,6 @@
 import psycopg2
+from faker import Faker
+import random
 class DataBaseQuery():
     db = psycopg2.connect(host="127.0.0.1",    # your host, usually localhost
                          user="postgres",         # your username
@@ -8,6 +10,31 @@ class DataBaseQuery():
     # you must create a Cursor object. It will let
     #  you execute all the queries you need
     cur = db.cursor()
+
+    def userprofile(self):
+        conn=self.db
+        fake =Faker()
+        cur =self.cur
+        for i in range(1000,1001):
+            Age= random.randint(15,65)
+            Gender=fake.profile(fields=None,sex=None)['sex']
+            Gender="'"+Gender+"'"
+            Profession=fake.profile(fields=None,sex=None)['job']
+            Profession = "'"+'Teacher'+"'"
+            Email=fake.profile(fields=None,sex=None)['mail']
+            Email ="'"+Email+"'"
+            salary=0
+            longtitude=float(random.randrange(5139000,5141300))/100000
+            latitude= float(random.randrange(357013,357233))/10000
+
+            Website=fake.profile(fields=None,sex=None)['website'][0]
+            Website="'"+Website+"'"
+
+            user_id=i
+
+
+            cur.execute('INSERT INTO first_app_userprofile("Age", "Gender", "Profession", "Email", "Salary", "User_longtitude_Coordinates", "User_latitude_Coordinates","website",phone,image,user_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,0,0,%s)' %(Age,Gender,Profession,Email,salary,longtitude,latitude,Website,user_id))
+            conn.commit()
 
     # Use all the SQL you like
     def create_first_category_zero_for_list_query(self,first_category):
@@ -60,3 +87,21 @@ class DataBaseQuery():
         cur.execute('SELECT  gid,name FROM public.all_shopping_from_taleqani_to__fatemi where first_category=%s order by gid' %first_category)
         get_store_name_order_by_gid=[row[0] for row in cur.fetchall()]
         return get_store_name_order_by_gid
+
+    def user_latitude_Coordinates(self,user_id):
+        cur=self.cur
+        cur.execute('SELECT "User_latitude_Coordinates" from first_app_userprofile where user_id=%s' %user_id)
+        latitude=[row[0] for row in cur.fetchall()]
+        return latitude
+
+
+    def user_longtitude_Coordinates(self,user_id):
+        cur=self.cur
+        cur.execute('SELECT "User_longtitude_Coordinates" from first_app_userprofile where user_id=%s' %user_id)
+        longtitude=[row[0] for row in cur.fetchall()]
+        return longtitude
+
+
+x= DataBaseQuery()
+print(x.user_latitude_Coordinates(43))
+print(x.user_longtitude_Coordinates(43))

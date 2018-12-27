@@ -63,9 +63,9 @@
       });
 
 
-var user_coordinate_lat= 35.7014014000
-var user_coordinate_lng=51.4042800000
-var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: PersonIcon}).addTo(mymap).bindPopup("<b>user's coordinates:</b></br>"+user_coordinate_lat+' , '+user_coordinate_lng);
+var user_coordinate_lat= new Number()
+var user_coordinate_lng= new Number()
+
 
 
 
@@ -75,10 +75,13 @@ var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: Perso
       $(document).on('click', '.geo', function () {
 
         var store_code =( $(".store_code_geo").eq($(this).index()).text())
-        lat_store = ($(".coordinates").eq($(this).index()).text().split(','))[0]
-        lng_store =  ($(".coordinates").eq($(this).index()).text().split(','))[1]
-        console.log(lat_store);
-        var marker= L.marker([lat_store,lng_store]).addTo(mymap).bindPopup("<b>store  "+ store_code +"  coordinates: </b></br>"+lat_store+' , '+lng_store);
+        user_coordinate_lat=($(".u_coordinates").eq($(this).index()).text().split(','))[0]
+        user_coordinate_lng=($(".u_coordinates").eq($(this).index()).text().split(','))[1]
+        lat_store = ($(".s_coordinates").eq($(this).index()).text().split(','))[0]
+        lng_store =  ($(".s_coordinates").eq($(this).index()).text().split(','))[1]
+
+        // var marker= L.marker([lat_store,lng_store]).addTo(mymap).bindPopup("<b>store  "+ store_code +"  coordinates: </b></br>"+lat_store+' , '+lng_store);
+        // var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: PersonIcon}).addTo(mymap).bindPopup("<b>user's coordinates:</b></br>"+user_coordinate_lat+' , '+user_coordinate_lng);
 
       var routing=L.Routing.control({
           waypoints: [
@@ -187,10 +190,21 @@ var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: Perso
 
           {% for lat,lng in store_coordinates %}
 
-          <li class="list-group-item coordinates" style="display:none;">{{lat}},{{lng}}</li>
+          <li class="list-group-item s_coordinates" style="display:none;">{{lat}},{{lng}}</li>
 
 
           {% endfor %}
+
+
+
+
+
+            {% for lat1,lng1 in user_coordinates %}
+
+            <li class="list-group-item u_coordinates" style="display:none;">{{lat1}},{{lng1}}</li>
+
+
+            {% endfor %}
         </ul>
 
 

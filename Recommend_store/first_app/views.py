@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.shortcuts import render
-from models import Customer, Store, NumericUserSearch, StoreProduct, AllShoppingFromTaleqaniToFatemi
+from models import Store, NumericUserSearch, StoreProduct, AllShoppingFromTaleqaniToFatemi
 from django.views.generic import (TemplateView, ListView,
                                   DetailView, CreateView,
                                   UpdateView, DeleteView)
@@ -65,7 +65,7 @@ def qet_queryset(request, num):
 
     #create instance from data_analysis classes
     similarity_user_store_analysis=SimilarityUserStores(user_id,first_category)
-    geographic_distance_user_stores=GeoDistanceUSerStores(user_coordinate=user_coordinates,first_category=first_category)
+    geographic_distance_user_stores=GeoDistanceUSerStores(user_id=user_id,first_category=first_category)
 
     # this func: normalized user feature space for example: user_feature_space=[1,0,2,0] => all item between 0,1 => [0.2***,0,.5***,0]
     normalized_user = similarity_user_store_analysis.normalized_user_feature_space()
@@ -81,7 +81,10 @@ def qet_queryset(request, num):
     store_coordinates_latitude=[x[3] for x in sort_geographic_distance]
     store_code_and_distance = zip(store_code, store_distance)
     store_coordinates=zip(store_coordinates_latitude,store_coordinates_longtitude)
-    return render(request, 'test.html', context={'store_code_distance':store_code_and_distance,'store_coordinates': store_coordinates,'similarity_dist':df_list})
+    user_coordinates_longtitude=[x[4] for x in sort_geographic_distance]
+    user_coordinates_latitude=[x[5] for x in sort_geographic_distance]
+    user_coordinates=zip(user_coordinates_latitude,user_coordinates_longtitude)
+    return render(request, 'test.html', context={'store_code_distance':store_code_and_distance,'store_coordinates': store_coordinates,'user_coordinates':user_coordinates,'similarity_dist':df_list})
 
 
 # @login_required

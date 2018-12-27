@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth.models import User
 from django.db import models
 import psycopg2
 import os
@@ -11,17 +11,32 @@ sys.setdefaultencoding('utf-8')
 # Create your models here.
 
 
-class Customer(models.Model):
-    user_name = models.CharField(primary_key=True, max_length=100)
-    first_name = models.CharField(max_length=100, blank=True, null=True)
-    last_name = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100)
-    address = models.CharField(max_length=200, blank=True, null=True)
-    mobile = models.CharField(max_length=100, blank=True, null=True)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    Age=models.IntegerField()
+
+    GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female'),)
+    Gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    Profession=models.TextField(max_length=20,default='',blank=True)
+    Email=models.EmailField(max_length=200,unique=True)
+    Salary=models.DecimalField(max_digits=9, decimal_places=4,blank=True)
+    User_longtitude_Coordinates=models.DecimalField(max_digits=10, decimal_places=6)
+    User_latitude_Coordinates=models.DecimalField(max_digits=10, decimal_places=6)
+    website = models.URLField(default='',blank=True)
+    phone = models.TextField(max_length=20,default='',blank=True)
+    image = models.ImageField(upload_to='profile_image', blank=True)
 
     class Meta:
-        managed = False
-        db_table = 'customer'
+        managed = True
+
+
+    def __str__(self):
+        return self.user.username
+
+
+
 
 
 class Store(models.Model):
