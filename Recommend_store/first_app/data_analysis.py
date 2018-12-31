@@ -13,6 +13,7 @@ import re
 from scipy.spatial import distance
 from urllib2 import Request as url_request
 from urllib2 import urlopen
+from sklearn import preprocessing
 
 
 class SimilarityUserStores():
@@ -24,6 +25,7 @@ class SimilarityUserStores():
 
 
     def calcullate_euc_distance_between_user_store_based_first_category(self, normalize_user):
+
         data_query = DataBaseQuery()
 
         first_category = self.first_category
@@ -58,9 +60,9 @@ class SimilarityUserStores():
             euc_distance_user_and_store = distance.euclidean(
                 normalize_store_feature, normalize_user)
             euc_distance_user_and_store = (
-                math.sqrt(create_first_category_zero_for_list)) - (euc_distance_user_and_store)
+                math.sqrt(2)) - (euc_distance_user_and_store)
             euc_distance_user_and_store = euc_distance_user_and_store / \
-                math.sqrt(create_first_category_zero_for_list)
+                math.sqrt(2)
             euc_distance_user_and_store = euc_distance_user_and_store * 100
             euc_distance_user_and_store = round(
                 euc_distance_user_and_store, ndigits=2)
@@ -96,8 +98,17 @@ class SimilarityUserStores():
                 user_id=user_id, numeric_first_category=first_category, numeric_second_category=second_cat))
             lst_user[second_cat -
                      1] = count_each_second_category_for_each_first_category_based_user
-        lst_norm_user = np.linalg.norm(lst_user)
-        normalized_user = lst_user / lst_norm_user
+        if distance.euclidean(lst_user,0)==0:
+            normalized_user=0
+        else:
+            lst_norm_user = np.linalg.norm(lst_user)
+            normalized_user = lst_user / lst_norm_user
+
+
+
+
+
+
         return normalized_user
 
 
