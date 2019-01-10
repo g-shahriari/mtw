@@ -136,7 +136,7 @@
         </li>
 
         <li>
-          <a href="{% url 'logout' %}"> <img src="http://files.softicons.com/download/social-media-icons/brushed-metal-icons-by-mebaze/png/32x32/Logout-01.png" height="42" width="42" /> </a>
+          <a href="{% url 'logout' %}"> <img src="{% static "media/Logout-01.png" %}" height="42" width="42" /> </a>
         </li>
         {% else %}
         <li><a class="btn btn-primary float-right" href="{% url 'login' %}">Log In</a></li>
