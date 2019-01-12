@@ -130,9 +130,9 @@ var user_coordinate_lng= new Number()
 
   <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link" id="nav-final-tab" data-toggle="tab" href="#nav-final" role="tab" aria-controls="nav-final" aria-selected="true">Final Sorting</a>
-      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Similarity Distance</a>
-      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Geographic Distance</a>
+      <a class="nav-item nav-link" id="nav-final-tab" data-toggle="tab" href="#nav-final" role="tab" aria-controls="nav-final" aria-selected="true" style="font-size:20px;">Final Sorting</a>
+      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"style="font-size:20px;">Similarity Distance</a>
+      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true" style="font-size:20px;">Geographic Distance</a>
 
     </div>
 
@@ -145,12 +145,12 @@ var user_coordinate_lng= new Number()
                     <li class="list-group-item similarity btn-dark" >
 
           <div class="">
-            <p class="  float-right"style="font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:15px;">{{items2}}</span>  </p>
+            <p class="  float-right"style="font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  </p>
 
           </div>
 
           <div class="">
-            <h2  class=" float-left" style="font-size:20px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
+            <h2  class=" float-left" style="font-size:30px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
             </h2>
           </div>
 
@@ -171,13 +171,13 @@ var user_coordinate_lng= new Number()
           <li class="list-group-item geo btn-dark" >
 
 <div class="">
-  <h2  class=" float-left" style="font-size:20px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo">{{item1}}</span>
+  <h2  class=" float-left" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo">{{item1}}</span>
   </h2>
 
 </div>
 
 <div class="">
-  <p class="  float-right "style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:15px;">{{item2}}</span> </p>
+  <p class="  float-right "style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}} </span> </p>
 
 </div>
 
@@ -335,7 +335,7 @@ normal_between_zero_one.push(value)
       var tuple2_from_final_sorted = new Array()
       for (var i = 0; i < sorted_final_distance.length; i += 2) {
         tuple_from_final_sorted.push(sorted_final_distance[i]);
-        $(".ul-final").append("<li class='list-group-item final_list btn-dark' style=' text-align: center; color:#4E4E50'>" +"Store ID:  "+  sorted_final_distance[i] + "</li>");
+        $(".ul-final").append("<li class='list-group-item final_list btn-dark' style=' text-align: center; color:#4E4E50; font-size:30px;'>" +"Store ID:  "+  sorted_final_distance[i] + "</li>");
 
         tuple2_from_final_sorted.push(tuple_from_final_sorted.join());
       }
