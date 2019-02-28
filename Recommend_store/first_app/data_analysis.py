@@ -234,3 +234,293 @@ class GeoDistanceUSerStores():
         sort_geographic_distance = tuple(sorted(tuple_with_gid_and_dist, key=itemgetter(1)))
 
         return sort_geographic_distance
+
+
+
+
+class AreaDetermine():
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    database_query= DataBaseQuery()
+
+    def get_store_id_coordinates_similarity(self,first_category):
+        database_query=self.database_query
+        user_id =self.user_id
+        stores= database_query.get_stores_id_coordinates_similarity(user_id,first_category)
+        return stores
+
+    def create_category_layer(self,first_category):
+        import numpy as np
+        from scipy.spatial import distance_matrix
+        g_x= np.arange(535000,537000,20)
+        g_y=np.arange(3951000,3954000,20)
+
+        grid_x,grid_y=np.meshgrid(g_x,g_y)
+
+        points=[]
+        x=list()
+        y=list()
+        values=[]
+        for items in self.get_store_id_coordinates_similarity(first_category):
+            x.append(items[1])
+            y.append(items[2])
+            points.append([items[1],items[2]])
+
+            values.append([items[3],])
+        values=np.asarray(values)
+        points=np.asarray(points)
+
+        def simple_idw(x, y,radius,values):
+            dist = distance_matrix(x, y)
+
+    # In IDW, weights are 1 / distance
+            len(dist)
+            upper=0
+            down=0
+            for i in range(len(dist)):
+                upper += values[i]/((dist[i])**2)
+                down += 1.0/((dist[i])**2)
+
+    # # Make weights sum to one
+    # weights /= weights.sum(axis=0)
+
+    # Multiply the weights for each interpolated point by all observed Z-values
+            if down!=0:
+                zi = upper/down
+            else:
+                zi=0
+            return zi
+
+        idw_interpolation=list()
+        for i in g_x:
+            for j in g_y:
+                idw_interpolation.append(simple_idw(points,[[i,j]],500,values))
+
+        cluster_factor= (float(max(idw_interpolation)))/20
+        max_c=float(max(idw_interpolation))
+        idw=list()
+        for i in range(0,len(idw_interpolation)):
+            if (max_c-cluster_factor*1)<idw_interpolation[i]<max_c:
+                idw.append(1)
+            elif (max_c-cluster_factor*2)<idw_interpolation[i]<(max_c-cluster_factor*1):
+                idw.append(2)
+            elif (max_c-cluster_factor*3)<idw_interpolation[i]<(max_c-cluster_factor*2):
+                idw.append(3)
+            elif (max_c-cluster_factor*4)<idw_interpolation[i]<(max_c-cluster_factor*3):
+                idw.append(4)
+            elif (max_c-cluster_factor*5)<idw_interpolation[i]<(max_c-cluster_factor*4):
+                idw.append(5)
+
+
+        # idw_value= np.reshape(idw_interpolation,(100,150)).T
+        # from matplotlib import cm
+        # import matplotlib.pyplot as plt
+        # # # from scipy.interpolate import LinearNDInterpolator
+        # # # from sklearn.ensemble import RandomForestRegressor
+        # # # regressor = RandomForestRegressor(n_estimators=10,random_state=0)
+        # # # regressor.fit(points,values.ravel())
+        # # # reg_value=list()
+        # # # for i in g_x:
+        # # #     for j in g_y:
+        # # #         reg_value.append(regressor.predict([[i,j]]))
+        # # # re_value= np.reshape(reg_value,(100,150)).T
+        # #
+        # #
+        # #
+        # plt.pcolor(grid_x, grid_y,idw_value , cmap=cm.jet)
+        # plt.colorbar()
+        # plt.scatter(x, y, color='black', cmap=cm.jet)
+        # plt.show()
+        # # # plt.subplot(222)
+        # # # plt.scatter(x, y,100, values, cmap=cm.jet)
+        # # # plt.colorbar()
+        # # plt.show()
+        # # #
+        #
+        # myInterpolator = LinearNDInterpolator(points, values,fill_value=0)
+        # inter_value=list()
+        # for i in g_x:
+        #     for j in g_y:
+        #         inter_value.append(myInterpolator(i,j))
+        # in_value= np.reshape(inter_value,(100,150)).T
+        #
+        #
+        # plt.subplot(222)
+        #
+        # plt.pcolor(grid_x, grid_y, in_value, cmap=cm.jet)
+        # plt.colorbar()
+        # plt.scatter(x, y, color='black', cmap=cm.jet)
+        #
+        # # plt.subplot(222)
+        # # plt.scatter(x, y, 100, values, cmap=cm.jet)
+        # # plt.colorbar()
+        # plt.show()
+        # plt.savefig('linear.png')
+
+        return idw
+    def overlay_all_layer(self):
+        import numpy as np
+        x=list()
+        y=list()
+        values=list()
+        for items in self.get_store_id_coordinates_similarity(2):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+
+        for items in self.get_store_id_coordinates_similarity(3):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+        for items in self.get_store_id_coordinates_similarity(4):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+        for items in self.get_store_id_coordinates_similarity(5):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+
+        for items in self.get_store_id_coordinates_similarity(6):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+
+        for items in self.get_store_id_coordinates_similarity(7):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+        for items in self.get_store_id_coordinates_similarity(8):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+        for items in self.get_store_id_coordinates_similarity(9):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+
+        for items in self.get_store_id_coordinates_similarity(10):
+            x.append(items[1])
+            y.append(items[2])
+            values.append(items[3])
+            x1=list()
+            y1=list()
+        for items in self.get_store_id_coordinates_similarity(12):
+
+            x1.append(items[1])
+            y1.append(items[2])
+            values.append(items[3])
+        g_x= np.arange(535000,537000,20)
+        g_y=np.arange(3951000,3954000,20)
+        grid_x,grid_y=np.meshgrid(g_x,g_y)
+        user_id=self.user_id
+        database_query=self.database_query
+        layer_1=self.create_category_layer(1)
+        layer_2=self.create_category_layer(2)
+        layer_3=self.create_category_layer(3)
+        layer_4=self.create_category_layer(4)
+        layer_5=self.create_category_layer(5)
+        layer_6=self.create_category_layer(6)
+        layer_7=self.create_category_layer(7)
+        layer_8=self.create_category_layer(8)
+        layer_9=self.create_category_layer(9)
+        layer_10=self.create_category_layer(10)
+        # # layer_11=self.create_category_layer(11)
+        layer_12=self.create_category_layer(12)
+        items= database_query.get_weights(user_id)
+        layer_1=layer_1*items[0]
+        layer_2=layer_2*items[1]
+        layer_3=layer_3*items[2]
+        layer_4=layer_4*items[3]
+        layer_5=layer_5*items[4]
+        layer_6=layer_6*items[5]
+        layer_7=layer_7*items[6]
+        layer_8=layer_8*items[7]
+        layer_9=layer_9*items[8]
+        layer_10=layer_10*items[9]
+        layer_12=layer_12*items[11]
+        combine_layer= layer_1+layer_2+layer_3+layer_4+layer_5+layer_6+layer_7+layer_8+layer_9+layer_10+layer_12
+
+        from matplotlib import cm
+        import matplotlib.pyplot as plt
+
+        plt.pcolor(grid_x, grid_y, combine_layer, cmap=cm.jet)
+        plt.colorbar()
+        plt.scatter(x1, y1,color='blue', cmap=cm.jet)
+        plt.show()
+
+    def extract_stores_from_database(self):
+        database_query=self.database_query
+        user_id=self.user_id
+
+
+        best_store_based_sorted=database_query.sorted_100_stores_in_all_category(user_id)
+        return best_store_based_sorted
+
+
+class AreaBasedAntColony():
+
+        def __init__(self, user_id):
+            self.user_id = user_id
+
+        database_query= DataBaseQuery()
+
+        def get_category_and_weights_order_by_weight(self):
+            user_id=self.user_id
+            database_query=self.database_query
+            category_weight=database_query.get_category_and_weight_order_by_weight(user_id)
+            return category_weight
+
+        def store_id_for_each_max_category(self,each_category_from_end):
+            database_query=self.database_query
+            max_category=self.get_category_and_weights_order_by_weight()[-each_category_from_end][0]
+            stores_id=database_query.get_stores_id_and_coordinate(search_category=max_category)
+
+
+            return stores_id
+
+        def distance_from_max_category(self):
+            from sklearn.metrics.pairwise import euclidean_distances
+            first_max_category=self.store_id_for_each_max_category(each_category_from_end=1)
+            first_category_store_location=[[i[1],i[2]] for i in first_max_category]
+            second_max_category=self.store_id_for_each_max_category(each_category_from_end=2)
+            second_category_store_location=[[i[1],i[2]] for i in second_max_category]
+            third_max_category=self.store_id_for_each_max_category(each_category_from_end=3)
+            third_category_store_location=[[i[1],i[2]] for i in third_max_category]
+            forth_max_category=self.store_id_for_each_max_category(each_category_from_end=4)
+            forth_category_store_location=[[i[1],i[2]] for i in forth_max_category]
+            t=second_category_store_location+third_category_store_location+forth_category_store_location
+            x= euclidean_distances(first_category_store_location,t)
+            return x
+
+        
+
+
+
+
+
+x= AreaBasedAntColony(1)
+first_max_category=x.store_id_for_each_max_category(each_category_from_end=1)
+second_max_category=x.store_id_for_each_max_category(each_category_from_end=2)
+third_max_category=x.store_id_for_each_max_category(each_category_from_end=3)
+forth_max_category=x.store_id_for_each_max_category(each_category_from_end=4)
+y=x.store_id_for_each_max_category(each_category_from_end=1)
+import numpy
+print numpy.shape(x.distance_from_max_category())
+
+
+
+
+# print first_max_category
+# print '#################*****************##############'
+# print(second_max_category)
+# print '#################*****************##############'
+# print(third_max_category)
+# print '#################*****************##############'
+# print(forth_max_category)
+
+# x= AreaBasedAntColony(1)
+#
+# print x.store_id_for_each_max_category(1)

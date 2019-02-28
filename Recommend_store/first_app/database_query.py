@@ -11,6 +11,18 @@ class DataBaseQuery():
     #  you execute all the queries you need
     cur = db.cursor()
 
+
+    def sorted_100_stores_in_all_category(self,user_id):
+        cur=self.cur
+        cur.execute('SELECT "Search_category", store_id, similarity_with_category_weight FROM public.user_store where user_id=%s order by similarity_with_category_weight DESC fetch first 100 rows only' %user_id)
+        store_id_and_similarity=[]
+        for row in cur.fetchall():
+            store_id_and_similarity.append(int(row[1]))
+            store_id_and_similarity.append(float(row[2]))
+
+        return store_id_and_similarity
+
+
     def userprofile(self):
         conn=self.db
         fake =Faker()
@@ -101,7 +113,68 @@ class DataBaseQuery():
         longtitude=[row[0] for row in cur.fetchall()]
         return longtitude
 
+    def user_all_searches(self,user_id):
+        cur=self.cur
+        cur.execute('SELECT count(numeric_first_category) FROM public.numeric_user_search where user_id=%s' %user_id)
+        count__searches=float(cur.fetchone()[0])
+        return count__searches
 
-x= DataBaseQuery()
-print(x.user_latitude_Coordinates(43))
-print(x.user_longtitude_Coordinates(43))
+
+    def user_search_in_a_category(self,user_id,category):
+        cur=self.cur
+        cur.execute('SELECT count(numeric_first_category) FROM public.numeric_user_search where user_id=%s and numeric_first_category=%s' %(user_id,category))
+        count_each_category_search= float(cur.fetchone()[0])
+
+        return count_each_category_search
+
+    def get_coordinates_lat_based_store_id(self,store_id):
+        cur= self.cur
+        cur.execute("SELECT  lat FROM public.all_shopping_from_taleqani_to__fatemi where gid=%s" %store_id)
+        store_id_lat= float(cur.fetchone()[0])
+        return store_id_lat
+
+    def get_coordinates_long_based_store_id(self,store_id):
+        cur= self.cur
+        cur.execute('SELECT  "long" FROM public.all_shopping_from_taleqani_to__fatemi where gid=%s' %store_id)
+        store_id_long= float(cur.fetchone()[0])
+        return store_id_long
+
+
+    def get_stores_id_coordinates_similarity(self,user_id,search_category):
+        cur = self.cur
+        cur.execute('SELECT  store_id, store_coordinate_x, store_coordinate_y, similarity FROM public.user_store where user_id=%s and search_category=%s' %(user_id,search_category))
+        x=cur.fetchall()
+        stores_id=[int(row[0]) for row in x]
+        stores_x=[float(row[1]) for row in x]
+        stores_y=[float(row[2]) for row in x]
+        similarity=[float(row[3]) for row in x]
+        y= zip(stores_id,stores_x,stores_y,similarity)
+        return y
+
+    def get_category_and_weight_order_by_weight(self,user_id):
+        cur=self.cur
+        cur.execute('SELECT category, weight FROM public.category_weight where user_id=%s order by weight' %user_id)
+        x=cur.fetchall()
+        category_id=[int(row[0]) for row in x]
+        category_weight=[float(row[1]) for row in x]
+        result=[]
+        for i in range(0,len(category_id)):
+            if category_weight[i]!=0:
+                result.append([category_id[i],category_weight[i]])
+
+
+        return result
+
+    def get_stores_id_and_coordinate(self,search_category):
+        cur = self.cur
+        cur.execute('SELECT  store_id, store_coordinate_x, store_coordinate_y FROM public.user_store where search_category=%s' %(search_category))
+        x=cur.fetchall()
+        stores_id=[int(row[0]) for row in x]
+        stores_x=[float(row[1]) for row in x]
+        stores_y=[float(row[2]) for row in x]
+
+        y= zip(stores_id,stores_x,stores_y)
+        return y
+
+x = DataBaseQuery()
+print x.get_category_and_weight_order_by_weight(1)
