@@ -8,6 +8,8 @@ urlpatterns = [
 
     url(r'^about/$', views.AboutView.as_view(), name='about'),
     url(r'^test/$', views.my_custom_sql, name='test'),
+    url(r'^createnewcustomer/$', views.CreateNewCustomer.as_view(), name='createnewcustomer'),
+    url(r'^createnewseller/$', views.CreateNewSeller.as_view(), name='createnewseller'),
 
 
 ]

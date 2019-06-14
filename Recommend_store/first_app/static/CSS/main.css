@@ -1,0 +1,39 @@
+.all-list{
+  height: 100px;
+  width:100%;
+}
+
+.picture{
+float: left;
+  height: 80px;
+  width: 50%;
+}
+
+.store_id{
+float: left;
+padding-bottom: 20px;
+height: 30px;
+width: 50%;
+
+}
+
+.percentage{
+  float: right;
+height: 20px;
+width: 50%;
+}
+
+
+.detail{
+  float: right;
+  padding-top: 60px;
+height: 10px;
+width: 50%;
+}
+
+.route{
+  float: right;
+padding-top: 40px;
+height: 10px;
+width: 50%;
+}

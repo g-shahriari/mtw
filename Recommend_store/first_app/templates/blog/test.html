@@ -4,13 +4,15 @@
 
 
 
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+  <link rel="stylesheet" href="{%static "CSS/main.css" %}">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <link rel="stylesheet" href={% static "route/leaflet-routing-machine.css" %} />
+</head>
 
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-<link rel="stylesheet" href={% static "route/leaflet-routing-machine.css" %} />
 <style>
     .map {
         position: absolute;
@@ -100,6 +102,34 @@ var user_coordinate_lng= new Number()
       });
 
 
+      $(document).on('click', '.similarity', function () {
+
+        var store_code =( $(".store_code_similarity").eq($(this).index()).text())
+        user_coordinate_lat=($(".u_coordinates").eq($(this).index()).text().split(','))[0]
+        user_coordinate_lng=($(".u_coordinates").eq($(this).index()).text().split(','))[1]
+        lat_store = ($(".s_coordinates").eq($(this).index()).text().split(','))[0]
+        lng_store =  ($(".s_coordinates").eq($(this).index()).text().split(','))[1]
+
+        // var marker= L.marker([lat_store,lng_store]).addTo(mymap).bindPopup("<b>store  "+ store_code +"  coordinates: </b></br>"+lat_store+' , '+lng_store);
+        // var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: PersonIcon}).addTo(mymap).bindPopup("<b>user's coordinates:</b></br>"+user_coordinate_lat+' , '+user_coordinate_lng);
+
+      var routing=L.Routing.control({
+          waypoints: [
+              L.latLng(user_coordinate_lat, user_coordinate_lng),
+                L.latLng(lat_store, lng_store),
+          ],
+          routeWhileDragging: true
+      }).addTo(mymap);
+
+
+
+
+
+
+
+      });
+
+
 
 
 
@@ -128,7 +158,7 @@ var user_coordinate_lng= new Number()
 
 
 
-  <nav>
+
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
       <a class="nav-item nav-link" id="nav-final-tab" data-toggle="tab" href="#nav-final" role="tab" aria-controls="nav-final" aria-selected="true" style="font-size:20px;">Final Sorting</a>
       <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"style="font-size:20px;">Similarity Distance</a>
@@ -144,15 +174,32 @@ var user_coordinate_lng= new Number()
 
                     <li class="list-group-item similarity btn-dark" >
 
-          <div class="">
-            <p class="  float-right"style="font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  </p>
+          <div class="all-list" >
+            <div class="picture">
+                <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
+            </div>
+            <div class="">
+              <a href="#" class="detail">Store Detail</a>
 
-          </div>
+            </div>
 
-          <div class="">
-            <h2  class=" float-left" style="font-size:30px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
-            </h2>
-          </div>
+
+</div>
+
+
+  <div class="percentage">
+    <p style=" font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  </p>
+  </div>
+  <div class="store_id">
+    <p style="font-size:30px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
+    </p>
+
+
+  </div>
+
+
+
+
 
 
                 </li>
@@ -169,18 +216,30 @@ var user_coordinate_lng= new Number()
           {% for item1,item2 in store_code_distance %}
 
           <li class="list-group-item geo btn-dark" >
+            <div class="all-list">
 
+
+<div class="picture">
+  <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
+
+</div>
 <div class="">
-  <h2  class=" float-left" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo">{{item1}}</span>
-  </h2>
+  <a href="#" class="detail">Store Detail</a>
 
 </div>
 
-<div class="">
-  <p class="  float-right "style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}} </span> </p>
+
+</div>
+<div class="store_id">
+  <p   class="" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo">{{item1}}</span>
+  </p>
 
 </div>
 
+<div class="Percentage">
+  <p class=""style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}} </span> </p>
+
+</div>
 
       </li>
 

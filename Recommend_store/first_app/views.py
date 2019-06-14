@@ -45,8 +45,13 @@ class AboutView(TemplateView):
 class BaseView(TemplateView):
     template_name = 'base.html'
 
+class CreateNewCustomer(TemplateView):
+    template_name='createnewcustomer.html'
 
+class CreateNewSeller(TemplateView):
+    template_name='createnewseller.html'
 
+    
 longtitude=0
 
 def lat_ajax(request):

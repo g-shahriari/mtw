@@ -11,9 +11,9 @@
   <!------ Include the above in your HEAD tag ---------->
 </head>
 
-<body id="LoginForm">
+<body class="bg" id="LoginForm" >
   <div class="container">
-    <h1 class="form-heading">login Form</h1>
+    <h1 class="form-heading"></h1>
     <div class="login-form">
       <div class="main-div">
         <div class="panel">
@@ -25,7 +25,7 @@
 
 
         <div class="form-group">
-          <form method="POST" action="{% url 'login' %}" id="Login">
+          <form method="POST" action="{% url 'logins' %}" id="Login">
 
             {% csrf_token %}
             {{form.as_p}}
@@ -35,6 +35,12 @@
             <!-- <input type="hidden" name="next" value="{{ next }}" /> -->
 
           </form>
+        </div>
+        <div class="">
+        <a class=" float-left" href="{% url 'createnewcustomer' %}">Create a new account (Customer)</a>
+        </div>
+        <div class="">
+        <a class=" float-left" href="{% url 'createnewseller' %}">Create a new account (Seller)</a>
         </div>
 
 

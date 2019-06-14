@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from database_query import DataBaseQuery
+from ant_colony import AntColony
 import sys
 import unicodedata
 import numpy as np
@@ -476,40 +477,89 @@ class AreaBasedAntColony():
         def store_id_for_each_max_category(self,each_category_from_end):
             database_query=self.database_query
             max_category=self.get_category_and_weights_order_by_weight()[-each_category_from_end][0]
-            stores_id=database_query.get_stores_id_and_coordinate(search_category=max_category)
+            stores_id=database_query.get_stores_id_and_coordinate_and_similarity(search_category=max_category)
 
 
             return stores_id
 
-        def distance_from_max_category(self):
+        def distance_from_max_category(self,category_from_end):
+            import numpy as np
             from sklearn.metrics.pairwise import euclidean_distances
             first_max_category=self.store_id_for_each_max_category(each_category_from_end=1)
             first_category_store_location=[[i[1],i[2]] for i in first_max_category]
-            second_max_category=self.store_id_for_each_max_category(each_category_from_end=2)
+            second_max_category=self.store_id_for_each_max_category(each_category_from_end=category_from_end)
             second_category_store_location=[[i[1],i[2]] for i in second_max_category]
-            third_max_category=self.store_id_for_each_max_category(each_category_from_end=3)
-            third_category_store_location=[[i[1],i[2]] for i in third_max_category]
-            forth_max_category=self.store_id_for_each_max_category(each_category_from_end=4)
-            forth_category_store_location=[[i[1],i[2]] for i in forth_max_category]
-            t=second_category_store_location+third_category_store_location+forth_category_store_location
-            x= euclidean_distances(first_category_store_location,t)
+            second_category_store_code=[i[0] for i in second_max_category]
+            second_category_similarity=[i[3] for i in second_max_category]
+            x= euclidean_distances(first_category_store_location,second_category_store_location)
+
+            list_of_store_code_coordinates_similarity_separated_by_each_first_max_category=list()
+            for i in range(0,np.shape(x)[0]):
+                list_of_store_code_coordinates_similarity=list()
+                for j in range(0,np.shape(x)[1]):
+                    list_of_store_code_coordinates_similarity.append([x[i][j],second_category_store_code[j],second_category_store_location[j][0],second_category_store_location[j][1],second_category_similarity[j]])
+                list_of_store_code_coordinates_similarity_separated_by_each_first_max_category.append(list_of_store_code_coordinates_similarity)
+            return list_of_store_code_coordinates_similarity_separated_by_each_first_max_category
+
+        def stores_within_disance_buffer(self,buffer,category,row_number):
+            import numpy as np
+            distance_mat=self.distance_from_max_category(category_from_end=category)
+            list_of_store_code_coordinates_similarity_buffer=list()
+            for j in range(0,np.shape(distance_mat)[1]):
+                if distance_mat[row_number][j][0]<buffer:
+                    list_of_store_code_coordinates_similarity_buffer.append(distance_mat[row_number][j][0:5])
+            return list_of_store_code_coordinates_similarity_buffer
+
+
+
+
+        def combine_all_category_plus_store_code_position_similarity(self,row_number):
+            import numpy as np
+            first_category_store_code_position_similarity=list()
+            first_category_store_code_position_similarity.append(0)
+            first_max_category=list(self.store_id_for_each_max_category(1)[row_number])
+            first_category_store_code_position_similarity.append(first_max_category[0])
+            first_category_store_code_position_similarity.append(first_max_category[1])
+            first_category_store_code_position_similarity.append(first_max_category[2])
+            first_category_store_code_position_similarity.append(first_max_category[3])
+            second_category_store_code_position_similarity_buffer=self.stores_within_disance_buffer(buffer=500,row_number=row_number,category=2)
+            second_category_initial_pheromone=[1]*(np.shape(second_category_store_code_position_similarity_buffer)[0])
+            third_category_store_code_position_similarity_buffer=self.stores_within_disance_buffer(buffer=500,row_number=row_number,category=3)
+            third_category_initial_pheromone=[1]*(np.shape(third_category_store_code_position_similarity_buffer)[0])
+            fourth_category_store_code_position_similarity_buffer=self.stores_within_disance_buffer(buffer=500,row_number=row_number,category=4)
+            fourth_category_initial_pheromone=[1]*(np.shape(fourth_category_store_code_position_similarity_buffer)[0])
+            combined_pheromone=[1,second_category_initial_pheromone,third_category_initial_pheromone,fourth_category_initial_pheromone]
+            combined=[first_category_store_code_position_similarity,second_category_store_code_position_similarity_buffer,third_category_store_code_position_similarity_buffer,fourth_category_store_code_position_similarity_buffer]
+            return combined,combined_pheromone
+
+        def ant_colony(self,row_number):
+            ant=AntColony()
+            points= self.combine_all_category_plus_store_code_position_similarity(row_number)[0]
+            pheromone=self.combine_all_category_plus_store_code_position_similarity(row_number)[1]
+            x= ant.repeated_ant_colony(number_of_repeat=10,points=points,points_pheromone=pheromone)
+
             return x
-
-        
-
 
 
 
 
 x= AreaBasedAntColony(1)
-first_max_category=x.store_id_for_each_max_category(each_category_from_end=1)
-second_max_category=x.store_id_for_each_max_category(each_category_from_end=2)
-third_max_category=x.store_id_for_each_max_category(each_category_from_end=3)
-forth_max_category=x.store_id_for_each_max_category(each_category_from_end=4)
 y=x.store_id_for_each_max_category(each_category_from_end=1)
-import numpy
-print numpy.shape(x.distance_from_max_category())
+import numpy as np
 
+
+dist_len=np.shape(x.distance_from_max_category(category_from_end=2))[0]
+
+
+
+# print (x.combine_all_category_plus_store_code_position_similarity(1)[0])[1]
+# print np.shape(x.combine_all_category_plus_store_code_position_similarity(0)[2])
+# print x.combine_all_category_plus_store_code_position_similarity(0)[0]
+# for i in range(0,dist_len):
+# e.append([x.stores_within_disance_buffer(buffer=200,row_number=0,category=2),x.stores_within_disance_buffer(buffer=200,row_number=0,category=3),x.stores_within_disance_buffer(buffer=200,row_number=0,category=4)])
+print (x.combine_all_category_plus_store_code_position_similarity(0)[0])[1][1]
+
+print x.ant_colony(row_number=5)
 
 
 

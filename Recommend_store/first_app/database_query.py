@@ -165,16 +165,16 @@ class DataBaseQuery():
 
         return result
 
-    def get_stores_id_and_coordinate(self,search_category):
+    def get_stores_id_and_coordinate_and_similarity(self,search_category):
         cur = self.cur
-        cur.execute('SELECT  store_id, store_coordinate_x, store_coordinate_y FROM public.user_store where search_category=%s' %(search_category))
+        cur.execute('SELECT  store_id, store_coordinate_x, store_coordinate_y,similarity FROM public.user_store where search_category=%s' %(search_category))
         x=cur.fetchall()
         stores_id=[int(row[0]) for row in x]
         stores_x=[float(row[1]) for row in x]
         stores_y=[float(row[2]) for row in x]
-
-        y= zip(stores_id,stores_x,stores_y)
+        similarity=[float(row[3]) for row in x]
+        y= zip(stores_id,stores_x,stores_y,similarity)
         return y
 
-x = DataBaseQuery()
-print x.get_category_and_weight_order_by_weight(1)
+# x = DataBaseQuery()
+# print x.get_category_and_weight_order_by_weight(1)
