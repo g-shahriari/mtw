@@ -17,7 +17,7 @@
 <body id="bg">
 
 
-  <div class="container register">
+  <div class="container register " style=" width: 80%;">
 
 
 
@@ -28,7 +28,51 @@
                                   <h3 class="register-heading">Apply as a new customer</h3>
                                   <div class="row register-form">
                                       <div class="col-md-6">
-                                          <div class="form-group">
+                                        <form  method="POST">
+                                          <label for="div-first-name">Username:</label>
+                                          <div class="form-group form control" id="div-first-name">
+
+                                            {{ user_form.username }}
+                                          </div>
+
+                                          <label for="div-email">Email:</label>
+                                          <div class="form-group form control" id="div-email">
+                                            {{ user_form.email }}
+                                          </div>
+                                          <label for="div-mobile">Mobile Phone:</label>
+                                          <div class="form-group form control" id="div-mobile">
+                                            {{ customer_form.phone }}
+                                          </div>
+                                          <label for="div-gender">Gender:</label>
+                                          <div class="form-group form control" id="div-gender">
+                                            {{ customer_form.Gender }}
+                                          </div>
+                                          <label for="div-address">Address:</label>
+                                          <div class="form-group form control" id="div-address">
+                                            {{ customer_form.Address }}
+                                          </div>
+
+                                          <label for="div-password">Password:</label>
+                                          <div class="form-group form control" id="div-password">
+                                            {{ user_form.password }}
+                                          </div>
+                                          <label for="div-image">image:</label>
+                                          <div class="form-group form control" id="div-image">
+                                            {{ customer_form.Image }}
+                                          </div>
+                                          <label for="div-file">History File:</label>
+                                          <div class="form-group form control" id="div-file">
+                                            {{ customer_form.History }}
+                                          </div>
+                                            {% csrf_token %}
+
+
+                                          <div class="">
+                                          <input type="submit" class="btnRegister"  value="Register"/>
+                                          </div>
+                                        </form>
+
+                                          <!-- <div class="form-group">
                                               <input type="text" class="form-control" placeholder="First Name *" value="" />
                                           </div>
                                           <div class="form-group">
@@ -65,9 +109,11 @@
                                           </div>
                                           <div class="form-group">
                                             <label for="history-file">Insert your history file</label>
-                                              <input type="file" class="form-control" id="history-file"  />
-                                          </div>
-                                          <input type="submit" class="btnRegister"  value="Register"/>
+                                              <input type="file" class="form-control" id="history-file"  /> -->
+                                          <!-- </div> -->
+
+
+
                                       </div>
                                   </div>
                               </div>

@@ -175,11 +175,11 @@ var user_coordinate_lng= new Number()
                     <li class="list-group-item similarity btn-dark" >
 
           <div class="all-list" >
-            <div class="picture">
+            <!-- <div class="picture">
                 <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
-            </div>
+            </div> -->
             <div class="">
-              <a href="#" class="detail">Store Detail</a>
+              <a href="{% url 'query' num=items1 %}" class="detail">Store Detail</a>
 
             </div>
 
@@ -188,7 +188,7 @@ var user_coordinate_lng= new Number()
 
 
   <div class="percentage">
-    <p style=" font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  </p>
+    <p style=" font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  %</p>
   </div>
   <div class="store_id">
     <p style="font-size:30px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
@@ -196,8 +196,6 @@ var user_coordinate_lng= new Number()
 
 
   </div>
-
-
 
 
 
@@ -219,25 +217,22 @@ var user_coordinate_lng= new Number()
             <div class="all-list">
 
 
-<div class="picture">
+<!-- <div class="picture">
   <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
 
-</div>
-<div class="">
-  <a href="#" class="detail">Store Detail</a>
+</div> -->
 
-</div>
 
 
 </div>
 <div class="store_id">
-  <p   class="" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo">{{item1}}</span>
+  <p   class="" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo" id="store_id_code">{{item1}}</span>
   </p>
 
 </div>
 
 <div class="Percentage">
-  <p class=""style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}} </span> </p>
+  <p class=""style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}}</span style="font-size:20px;"><span>Meter</span> </p>
 
 </div>
 

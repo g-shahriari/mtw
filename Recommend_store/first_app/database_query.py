@@ -63,6 +63,25 @@ class DataBaseQuery():
         count_second_category_for_user= [row[0] for row in cur.fetchall()]
         return count_second_category_for_user
 
+
+    def count_second_category_type_for_each_store_based_first_category(self,store_id,first_category,second_category):
+        cur=self.cur
+        cur.execute("SELECT count(second_category) from store_products where store_id=%s and first_category=%s and second_category=%s" %(store_id,first_category,second_category))
+        second_category_count=[row[0] for row in cur.fetchall()][0]
+        return second_category_count
+
+    def count_each_second_category_for_each_first_category_based_user(self,user_id, numeric_first_category, numeric_second_category):
+        cur=self.cur
+        cur.execute("SELECT count(numeric_second_category) from numeric_user_search where user_id=%s and numeric_first_category=%s and numeric_second_category=%s" %(user_id, numeric_first_category, numeric_second_category))
+        second_category_count=[row[0] for row in cur.fetchall()][0]
+        return second_category_count
+
+    def user_search_in_a_category(self,user_id,category):
+        cur=self.cur
+        cur.execute('SELECT count(numeric_first_category) FROM public.numeric_user_search where user_id=%s and numeric_first_category=%s' %(user_id,category))
+        count_each_category_search= float(cur.fetchone()[0])
+        return count_each_category_search
+
     def get_store_id_based_first_category(self,first_category):
         cur=self.cur
         cur.execute("SELECT distinct(store_id) from store_products where first_category=%s" %first_category)
@@ -80,19 +99,6 @@ class DataBaseQuery():
         cur.execute("SELECT gid from all_shopping_from_taleqani_to__fatemi where first_category=%s order by gid" %first_category)
         store_id_ordered= [row[0] for row in cur.fetchall()]
         return store_id_ordered
-
-    def count_second_category_type_for_each_store_based_first_category(self,store_id,first_category,second_category):
-        cur=self.cur
-        cur.execute("SELECT count(second_category) from store_products where store_id=%s and first_category=%s and second_category=%s" %(store_id,first_category,second_category))
-        second_category_count=[row[0] for row in cur.fetchall()][0]
-        return second_category_count
-
-    def count_each_second_category_for_each_first_category_based_user(self,user_id, numeric_first_category, numeric_second_category):
-        cur=self.cur
-        cur.execute("SELECT count(numeric_second_category) from numeric_user_search where user_id=%s and numeric_first_category=%s and numeric_second_category=%s" %(user_id, numeric_first_category, numeric_second_category))
-        second_category_count=[row[0] for row in cur.fetchall()][0]
-        return second_category_count
-
 
     def get_store_name_order_by_gid(self,first_category):
         cur=self.cur
@@ -120,12 +126,7 @@ class DataBaseQuery():
         return count__searches
 
 
-    def user_search_in_a_category(self,user_id,category):
-        cur=self.cur
-        cur.execute('SELECT count(numeric_first_category) FROM public.numeric_user_search where user_id=%s and numeric_first_category=%s' %(user_id,category))
-        count_each_category_search= float(cur.fetchone()[0])
 
-        return count_each_category_search
 
     def get_coordinates_lat_based_store_id(self,store_id):
         cur= self.cur
@@ -165,7 +166,7 @@ class DataBaseQuery():
 
         return result
 
-    def get_stores_id_and_coordinate_and_similarity(self,search_category):
+    def get_stores_id_and_coordinate_and_similarity(self,search_category,user_id):
         cur = self.cur
         cur.execute('SELECT  store_id, store_coordinate_x, store_coordinate_y,similarity FROM public.user_store where search_category=%s' %(search_category))
         x=cur.fetchall()
@@ -176,5 +177,41 @@ class DataBaseQuery():
         y= zip(stores_id,stores_x,stores_y,similarity)
         return y
 
-# x = DataBaseQuery()
-# print x.get_category_and_weight_order_by_weight(1)
+    def user_searches(self,user_id,first_category):
+        cur=self.cur
+        cur.execute("SELECT user_id, user_search_id, numeric_first_category, numeric_second_category, numeric_third_category, product_code, product_name FROM public.numeric_user_search_product_name_to_code where user_id=%s and numeric_first_category=%s", (user_id,first_category))
+        query_output= cur.fetchall()
+        user_id= [row[0] for row in query_output]
+        user_search_id=[row[1] for row in query_output]
+        numeric_first_category=[row[2] for row in query_output]
+        numeric_second_category=[row[3] for row in query_output]
+        numeric_third_category=[row[4] for row in query_output]
+        product_code= [row[5] for row in query_output]
+        product_name=[row[6] for row in query_output]
+        output= zip(user_id,user_search_id,numeric_first_category,numeric_second_category,numeric_third_category,product_code,product_name)
+        return output
+
+    def store_features(self,first_category):
+        cur=self.cur
+        cur.execute('SELECT gid, long, lat, name, first_category FROM public.all_shopping_from_taleqani_to__fatemi where first_category=%s', [first_category])
+        query_output=cur.fetchall()
+        store_id=[row[0] for row in query_output]
+        longtitude=[row[1] for row in query_output]
+        latitude=[row[2] for row in query_output]
+        store_name=[row[3] for row in query_output]
+        first_category=[row[4] for row in query_output]
+        output= zip(store_id,longtitude,latitude,store_name,first_category)
+        return output
+
+    def store_available_goods(self,first_category,store_id):
+        cur=self.cur
+        cur.execute("SELECT store_id, numeric_first_category, numeric_second_category, numeric_third_category, product_code, product_name FROM public.store_goods where numeric_first_category=%s and store_id=%s group by (store_id,numeric_first_category, numeric_second_category, numeric_third_category, product_code, product_name)",(first_category,store_id))
+        query_output=cur.fetchall()
+        store_id=[row[0] for row in query_output]
+        numeric_first_category=[row[1] for row in query_output]
+        numeric_second_category=[row[2] for row in query_output]
+        numeric_third_category=[row[3] for row in query_output]
+        product_code=[row[4] for row in query_output]
+        product_name=[row[5] for row in query_output]
+        output= zip(store_id,numeric_first_category,numeric_second_category,numeric_third_category,product_code,product_name)
+        return output

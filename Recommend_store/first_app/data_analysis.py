@@ -15,42 +15,38 @@ from scipy.spatial import distance
 from urllib2 import Request as url_request
 from urllib2 import urlopen
 from sklearn import preprocessing
+from pandas import DataFrame
 
 
 class SimilarityUserStores():
-
 
     def __init__(self, user_id, first_category):
         self.user_id = user_id
         self.first_category = first_category
 
-
     def calcullate_euc_distance_between_user_store_based_first_category(self, normalize_user):
 
         data_query = DataBaseQuery()
-
         first_category = self.first_category
-
         create_first_category_zero_for_list = int(
             data_query.create_first_category_zero_for_list_query(first_category))
-
         get_store_id_based_first_category = data_query. get_store_id_based_first_category(
             first_category)
-
         get_store_id_based_first_category = map(
             int, get_store_id_based_first_category)
-
         df_0 = pd.DataFrame()
 
         for stores in get_store_id_based_first_category:
             lst_store_feaure = [0] * create_first_category_zero_for_list
             df_0.loc[stores, 0] = stores
+
             for second_cat in range(1, (create_first_category_zero_for_list + 1)):
                 count_second_category_type_for_each_store_based_first_category = data_query.count_second_category_type_for_each_store_based_first_category(
                     store_id=stores, first_category=first_category, second_category=second_cat)
                 df_0.loc[stores, second_cat] = count_second_category_type_for_each_store_based_first_category
 
         df_store_id_and_euc_dist_user_store = pd.DataFrame(columns=['a', 'b'])
+
         for store_i, i in zip(get_store_id_based_first_category, range(0, len(get_store_id_based_first_category))):
             lst_store_feature = []
             df_store_id_and_euc_dist_user_store.loc[store_i, 'a'] = store_i
@@ -65,6 +61,10 @@ class SimilarityUserStores():
             euc_distance_user_and_store = euc_distance_user_and_store / \
                 math.sqrt(2)
             euc_distance_user_and_store = euc_distance_user_and_store * 100
+            if 30<euc_distance_user_and_store<=40:
+                euc_distance_user_and_store=euc_distance_user_and_store*2
+            elif euc_distance_user_and_store<=30:
+                euc_distance_user_and_store=euc_distance_user_and_store*2.5
             euc_distance_user_and_store = round(
                 euc_distance_user_and_store, ndigits=2)
             df_store_id_and_euc_dist_user_store.loc[store_i,
@@ -73,7 +73,7 @@ class SimilarityUserStores():
                                                                                'b'], ascending=False)
         df_list = list()
         df_tuple = tuple()
-        for i, j in zip(sorted_dataframe.ix[:, 'a'], sorted_dataframe.ix[:, 'b']):
+        for i, j in zip(sorted_dataframe.ix[:, 'a'], (sorted_dataframe.ix[:, 'b'])):
             df_list.append(i)
             df_list.append(j)
         it = iter(df_list)
@@ -106,10 +106,6 @@ class SimilarityUserStores():
             normalized_user = lst_user / lst_norm_user
 
 
-
-
-
-
         return normalized_user
 
 
@@ -120,9 +116,6 @@ class GeoDistanceUSerStores():
     def __init__(self,user_id,first_category):
         self.user_id=user_id
         self.first_category=first_category
-
-
-
 
     def distance_geographic_between_store_and_user(self,start_id_store_id_with_first_category, end_id_store_id_with_first_category):
         data_query=self.data_query
@@ -163,9 +156,6 @@ class GeoDistanceUSerStores():
 
 
     def calculate_distance_between_store_and_user_for_all_stores(self):
-        # first_category=self.first_category
-        # user_coordinate=self.user_coordinate
-        #
         first_category=self.first_category
         data_query=self.data_query
         get_store_id_based_first_category = data_query. get_store_id_based_first_category(
@@ -461,6 +451,71 @@ class AreaDetermine():
         return best_store_based_sorted
 
 
+
+
+
+class Similarity_based_search_by_search():
+
+    data_query = DataBaseQuery()
+    def __init__(self,user_id,first_category):
+        self.user_id=user_id
+        self.first_category=first_category
+
+
+    def user_searches(self):
+        data_query=self.data_query
+        user_id=self.user_id
+        first_category=self.first_category
+        user_search= data_query.user_searches(user_id=user_id,first_category=first_category)
+        output=DataFrame.from_records(user_search)
+        return output
+
+    def store_features(self):
+        data_query=self.data_query
+        first_category=self.first_category
+        store_feature_name_lat_long_id= data_query.store_features(first_category=first_category)
+        output =DataFrame.from_records(store_feature_name_lat_long_id)
+        return output
+
+
+    def store_available_goods(self,store_id):
+        data_query=self.data_query
+        first_category=self.first_category
+        store_available_good=data_query.store_available_goods(first_category=first_category,store_id=store_id)
+        output=DataFrame.from_records(store_available_good)
+        return output
+
+    def similarity(self):
+        user_search=self.user_searches()
+        output=[]
+        count_user_search=len(user_search[1])
+
+        store_feature=self.store_features()
+
+        for row in range(0,len(store_feature)):
+
+            store_goods=self.store_available_goods(store_id=store_feature.iloc[row,0])
+            match_goods_list=[]
+            for i in range(0,count_user_search):
+
+                for j in range(0,len(store_goods)):
+
+                    if user_search.iloc[i,2]==store_goods.iloc[j,1] and user_search.iloc[i,3]==store_goods.iloc[j,2] and user_search.iloc[i,4]==store_goods.iloc[j,3] and user_search.iloc[i,5]==store_goods.iloc[j,4] and user_search.iloc[i,6]==store_goods.iloc[j,5]:
+                        match_goods_list.append(user_search.iloc[i,6])
+
+            count_match_goods=len(match_goods_list)
+            similarity= (float(count_match_goods)/count_user_search)*100
+            similarity= "{0:.2f}".format(similarity)
+            output.append([store_feature.iloc[row,0],store_feature.iloc[row,1],store_feature.iloc[row,2],store_feature.iloc[row,3],count_user_search,count_match_goods,similarity])
+        out_dataframe=DataFrame.from_records(output)
+        out_dataframe=out_dataframe.sort_values(out_dataframe.columns[6],ascending=False)
+        return out_dataframe
+
+
+
+
+
+
 class AreaBasedAntColony():
 
         def __init__(self, user_id):
@@ -475,11 +530,10 @@ class AreaBasedAntColony():
             return category_weight
 
         def store_id_for_each_max_category(self,each_category_from_end):
+            user_id=self.user_id
             database_query=self.database_query
             max_category=self.get_category_and_weights_order_by_weight()[-each_category_from_end][0]
-            stores_id=database_query.get_stores_id_and_coordinate_and_similarity(search_category=max_category)
-
-
+            stores_id=database_query.get_stores_id_and_coordinate_and_similarity(search_category=max_category,user_id=user_id)
             return stores_id
 
         def distance_from_max_category(self,category_from_end):
@@ -510,9 +564,6 @@ class AreaBasedAntColony():
                     list_of_store_code_coordinates_similarity_buffer.append(distance_mat[row_number][j][0:5])
             return list_of_store_code_coordinates_similarity_buffer
 
-
-
-
         def combine_all_category_plus_store_code_position_similarity(self,row_number):
             import numpy as np
             first_category_store_code_position_similarity=list()
@@ -540,26 +591,30 @@ class AreaBasedAntColony():
 
             return x
 
+# x= AreaBasedAntColony(1)
+# print x.ant_colony(row_number=5
+x= SimilarityUserStores(user_id=1,first_category=4)
+print x.calcullate_euc_distance_between_user_store_based_first_category(x.normalized_user_feature_space())
+# x= AreaBasedAntColony(1)
+# y=x.store_id_for_each_max_category(each_category_from_end=1)
+# import numpy as np
+#
+#
+# dist_len=np.shape(x.distance_from_max_category(category_from_end=2))[0]
+#
+#
+#
+# # print (x.combine_all_category_plus_store_code_position_similarity(1)[0])[1]
+# # print np.shape(x.combine_all_category_plus_store_code_position_similarity(0)[2])
+# # print x.combine_all_category_plus_store_code_position_similarity(0)[0]
+# # for i in range(0,dist_len):
+# # e.append([x.stores_within_disance_buffer(buffer=200,row_number=0,category=2),x.stores_within_disance_buffer(buffer=200,row_number=0,category=3),x.stores_within_disance_buffer(buffer=200,row_number=0,category=4)])
+# print (x.combine_all_category_plus_store_code_position_similarity(0)[0])[1][1]
+#
+# print x.ant_colony(row_number=5)
+#
 
 
-
-x= AreaBasedAntColony(1)
-y=x.store_id_for_each_max_category(each_category_from_end=1)
-import numpy as np
-
-
-dist_len=np.shape(x.distance_from_max_category(category_from_end=2))[0]
-
-
-
-# print (x.combine_all_category_plus_store_code_position_similarity(1)[0])[1]
-# print np.shape(x.combine_all_category_plus_store_code_position_similarity(0)[2])
-# print x.combine_all_category_plus_store_code_position_similarity(0)[0]
-# for i in range(0,dist_len):
-# e.append([x.stores_within_disance_buffer(buffer=200,row_number=0,category=2),x.stores_within_disance_buffer(buffer=200,row_number=0,category=3),x.stores_within_disance_buffer(buffer=200,row_number=0,category=4)])
-print (x.combine_all_category_plus_store_code_position_similarity(0)[0])[1][1]
-
-print x.ant_colony(row_number=5)
 
 
 

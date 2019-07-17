@@ -3,13 +3,53 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 import psycopg2
+from phonenumber_field.modelfields import PhoneNumberField
 import os
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+
+
 # Create your models here.
 
+class Customer(models.Model):
+    user = models.OneToOneField(User)
+    phone = PhoneNumberField(null=False, blank=False, unique=True)
+    GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female'),)
+    Gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    Address = models.CharField(max_length=264)
+
+    Image = models.ImageField(upload_to='profile_image', blank=True)
+    History = models.ImageField(upload_to='uploads', blank=True)
+
+    def __str__(self):
+        # Built-in attribute of django.contrib.auth.models.User !
+        return self.user.username
+
+class Seller(models.Model):
+    user = models.OneToOneField(User)
+    Category_type = models.CharField(max_length=128)
+    phone = PhoneNumberField(null=False, blank=False, unique=True)
+    address = models.CharField(max_length=264)
+
+    goods = models.FileField()
+
+    def __str__(self):
+        # Built-in attribute of django.contrib.auth.models.User !
+        return self.user.username
+
+
+class Comments(models.Model):
+    name = models.ForeignKey('first_app.Customer')
+    Search_cost_geo= models.DecimalField(max_digits=9, decimal_places=4,blank=True)
+    Search_cost_sim= models.DecimalField(max_digits=9, decimal_places=4,blank=True)
+    Best_decision_geo =models.DecimalField(max_digits=9, decimal_places=4,blank=True)
+    Best_decision_sim =models.DecimalField(max_digits=9, decimal_places=4,blank=True)
+    Accuracy= models.DecimalField(max_digits=9, decimal_places=4,blank=True,null=True)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)

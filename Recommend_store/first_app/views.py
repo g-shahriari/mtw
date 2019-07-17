@@ -26,8 +26,8 @@ import math
 import time
 from operator import itemgetter
 import re
-
-from data_analysis import SimilarityUserStores,GeoDistanceUSerStores
+from first_app.signin_form import CustomerForm,SellerForm,UserForm,PollForm
+from data_analysis import SimilarityUserStores,GeoDistanceUSerStores,Similarity_based_search_by_search
 from database_query import DataBaseQuery
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -51,7 +51,9 @@ class CreateNewCustomer(TemplateView):
 class CreateNewSeller(TemplateView):
     template_name='createnewseller.html'
 
-    
+class ProfileView(TemplateView):
+    template_name = 'profile.html'
+
 longtitude=0
 
 def lat_ajax(request):
@@ -65,8 +67,8 @@ def qet_queryset(request, num):
     first_category = int(num)
     user_coordinates = "51.4042800000" + ',' + "35.7014014000"
 
-    longitude = request.GET.get('longitude')
-
+    longitude = request.GET.get('longtitude')
+    store_id_code=request.GET.get('store_id')
 
     #create instance from data_analysis classes
     similarity_user_store_analysis=SimilarityUserStores(user_id,first_category)
@@ -90,6 +92,174 @@ def qet_queryset(request, num):
     user_coordinates_latitude=[x[5] for x in sort_geographic_distance]
     user_coordinates=zip(user_coordinates_latitude,user_coordinates_longtitude)
     return render(request, 'test.html', context={'store_code_distance':store_code_and_distance,'store_coordinates': store_coordinates,'user_coordinates':user_coordinates,'similarity_dist':df_list})
+
+@login_required
+def similarity_list_based_search_by_search_check(request,num):
+    user_id=request.user.id
+    first_category=int(num)
+    similarity_based_search_by_search_check=Similarity_based_search_by_search(user_id=user_id,first_category=first_category)
+    geographic_distance_user_stores=GeoDistanceUSerStores(user_id=user_id,first_category=first_category)
+    similarity_result= similarity_based_search_by_search_check.similarity()
+    sort_geographic_distance=geographic_distance_user_stores.sorted_geographic_distance()
+    store_code= [x[0] for x in sort_geographic_distance]
+    store_distance=[x[1] for x in sort_geographic_distance]
+    store_coordinates_longtitude=[x[2] for x in sort_geographic_distance]
+    store_coordinates_latitude=[x[3] for x in sort_geographic_distance]
+    store_code_and_distance = zip(store_code, store_distance)
+    store_coordinates=zip(store_coordinates_latitude,store_coordinates_longtitude)
+    user_coordinates_longtitude=[x[4] for x in sort_geographic_distance]
+    user_coordinates_latitude=[x[5] for x in sort_geographic_distance]
+    user_coordinates=zip(user_coordinates_latitude,user_coordinates_longtitude)
+    store_id= [similarity_result.iloc[row,0] for row in similarity_result]
+    longtitude= [similarity_result.iloc[row,1] for row in similarity_result]
+    latitude= [similarity_result.iloc[row,2] for row in similarity_result]
+    sim_percentage= [similarity_result.iloc[row,6] for row in similarity_result]
+    number_of_matches_goods_user_by_store= [similarity_result.iloc[row,4] for row in similarity_result]
+    number_of_user_searches= [similarity_result.iloc[row,5] for row in similarity_result]
+    name= [similarity_result.iloc[row,3] for row in similarity_result]
+    store_feature=zip(store_id,sim_percentage,number_of_matches_goods_user_by_store,number_of_user_searches)
+    return render(request, 'sim_search_by_search.html',context={'store_code_distance':store_code_and_distance,'store_coordinates': store_coordinates,'user_coordinates':user_coordinates,'store_feature':store_feature})
+
+
+
+
+def customer_register(request):
+
+    registered = False
+
+    if request.method == 'POST':
+
+        # Get info from "both" forms
+        # It appears as one form to the user on the .html page
+        user_form = UserForm(data=request.POST)
+        customer_form = CustomerForm(request.POST,request.FILES)
+        # Check to see both forms are valid
+        if user_form.is_valid() and customer_form.is_valid():
+            # Save User Form to Database
+            user = user_form.save()
+            # # Hash the password
+            user.set_password(user.password)
+            #
+            # # Update with Hashed password
+            user.save()
+            #
+            # # Now we deal with the extra info!
+            # Can't commit yet because we still need to manipulate
+            profile = customer_form.save(commit=False)
+
+            # Set One to One relationship between
+            # UserForm and UserProfileInfoForm
+            profile.user = user
+            if 'History' in request.FILES:
+                print('found it')
+                # If yes, then grab it from the POST form reply
+                profile.History = request.FILES['History']
+
+            # Now save model
+            profile.save()
+
+            # Check if they provided a profile picture
+
+            # Registration Successful!
+            registered = True
+            return render(request,'blog/base.html')
+        else:
+            # One of the forms was invalid if this else gets called.
+            print(user_form.errors,customer_form.errors)
+
+    else:
+        # Was not an HTTP post so we just render the forms as blank.
+        user_form = UserForm()
+        customer_form = CustomerForm()
+
+    # This is the render and context dictionary to feed
+    # back to the registration.html file page.
+    return render(request,'blog/createnewcustomer.html',
+                          {'user_form':user_form,
+                           'customer_form':customer_form,
+                           'registered':registered})
+
+
+def seller_register(request):
+
+    registered = False
+
+    if request.method == 'POST':
+
+        # Get info from "both" forms
+        # It appears as one form to the user on the .html page
+        user_form = UserForm(data=request.POST)
+        seller_form = SellerForm(request.POST,request.FILES)
+
+        # Check to see both forms are valid
+        if user_form.is_valid() and seller_form.is_valid():
+            # Save User Form to Database
+            user = user_form.save()
+            # # Hash the password
+            user.set_password(user.password)
+            #
+            # # Update with Hashed password
+            user.save()
+            #
+            # # Now we deal with the extra info!
+
+            # Can't commit yet because we still need to manipulate
+            profile = seller_form.save(commit=False)
+            # Set One to One relationship between
+            # UserForm and UserProfileInfoForm
+            profile.user = user
+            if 'goods' in request.FILES:
+                print('found it')
+                # If yes, then grab it from the POST form reply
+                profile.goods = request.FILES['goods']
+
+            # Now save model
+            profile.save()
+
+            # Check if they provided a profile picture
+
+            # Registration Successful!
+            registered = True
+            return render(request,'blog/base.html')
+        else:
+            # One of the forms was invalid if this else gets called.
+            print(user_form.errors,seller_form.errors)
+
+    else:
+        # Was not an HTTP post so we just render the forms as blank.
+        user_form = UserForm()
+        seller_form = SellerForm()
+
+    # This is the render and context dictionary to feed
+    # back to the registration.html file page.
+    return render(request,'blog/createnewseller.html',
+                          {'user_form':user_form,
+                           'seller_form':seller_form,
+                           'registered':registered})
+
+
+
+@login_required
+def poll(request):
+    form = PollForm()
+
+
+    if request.method == 'POST':
+        form = PollForm(request.POST)
+
+        if form.is_valid():
+            form.save(commit=True)
+            return render(request,'blog/about.html')
+
+        else:
+            print("ERROR!")
+
+    return render(request,'blog/poll.html',{'form':form})
+
+
+def show_store_products(request,pk):
+    def get_queryset(self):
+        pk=self.pk
 
 
 # @login_required

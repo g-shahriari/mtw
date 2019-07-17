@@ -1,0 +1,64 @@
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% block content %}
+ <BODY LANG=”fa”>
+<head>
+  <link rel="stylesheet" href="{% static 'CSS/poll.css' %}">
+</head>
+<div class="jumbotron" style="direction:rtl">
+  <div class="container">
+    <h1 class="display-4 "  style="text-align:right"> فرم نظر سنجی</h1>
+
+    <hr class="my-4">
+    <p class="lead "  style="text-align:right">با سلام</p>
+    <p class="lead "  style="text-align:right">پرسشنامه ای که پیش رو دارید به منظور ارزیابی سیستم ارایه شده در این وب سایت و در راستای یک طرح پژوهشی در زمینه ارتباط میان فروشگاه ها و جستجوهای اینترنتی می باشد</p>
+      <p class="lead "  style="text-align:right">پاسخ های شما میتواند ما را در بهبود عملکرد سیستم کمک نماید</p>
+      <p class="lead "  style="text-align:right"> .پیشاپیش از وقتی که به منظور تکمیل این پرسشنامه قرار می دهدید کمال تشکر و سپاس را دارم</p>
+        <p class="lead "  style="text-align:left; font-size:15px"> با تشکر و سپاس فروان</p>
+        <p class="lead "  style="text-align:left; font-size:15px"> گشتاسب شهریاری مهر </p>
+        <p class="lead "  style="text-align:left; font-size:15px"> دانشجوی کارشناسی ارشد سیستم های اطلاعات مکانی</p>
+        <p class="lead "  style="text-align:left; font-size:15px"> دانشگاه تهران</p>
+        <hr class="my-4">
+        <form method="POSt">
+          <label for="div-sc_geo">امتیاز به سیستم جغرافیایی</label>
+          <div class="form-group form control" id="div-sc_geo">
+
+            {{ form.name }}
+          </div>
+        <h3   style="text-align:right">سوال یک:</h3>
+        <p style="text-align:right">همانطور که مستحضرید یکی از چالش هایی که بشر با آن مواجه است یافتن فروشگاه فیزیکی می باشد که با هزینه های مالی و  زمانی برای خریدار همراه می باشد. از این رو سیستم های مختلفی در راستای هدایت کاربر به نزدیکترین فروشگاه ایجاد گردیده است . در اکثر این سیستم ها فروشگاه های نزدیک به کاربر از لحاظ جغرافیایی پیشنهاد می گردد همچون وب سایت کی کجاس. در سیستم ارایه شده در این وب سایت پیشنهاد فروشگاه براساس شباهت کالاهای فروشگاه با کالاهایی که شما در گذشته در فروشگاه اینترنتی ترب انجام داده اید می باشد. از این رو امتیازی که شما به این سیستم در مقابل با سیستم هایی که صرفا فروشگاه نزدیک را پیشنهاد می دهند به چه صورتی می باشد؟</p>
+
+          <label for="div-sc_geo">امتیاز به سیستم جغرافیایی</label>
+          <div class="form-group form control" id="div-sc_geo">
+
+            {{ form.Search_cost_geo }}
+          </div>
+          <label for="div-sc_sim">امتیاز به سیستم ارایه شده برمبنای شباهت:</label>
+          <div class="form-group form control" id="div-sc_sim">
+
+            {{ form.Search_cost_sim }}
+          </div>
+          <h3   style="text-align:right">سوال دو:</h3>
+            <p style="text-align:right">یکی از مهمترین مشکلات در هنگام خرید کالا از ورود به فروشگاهی که کالاهای مورنیاز خریدار را نداشته و فروشنده با نظرات خود باعث گمراهی خریدار می شود. به همین منظور این سیستم در راستای کمک به کاربر جهت ورود به فروشگاه مطابق خواستش می باشد. به مین منظور از شما خواستاریم تا نظر خود را در این زمینه بیان نمایید.</p>
+            <label for="div-bd_geo">امتیاز به سیستم جغرافیایی</label>
+            <div class="form-group form control" id="div-sc_bd">
+
+              {{ form.Best_decision_geo }}
+            </div>
+            <label for="div-bd_sim">امتیاز به سیستم ارایه شده برمبنای شباهت:</label>
+            <div class="form-group form control" id="div-bd_sim">
+
+              {{ form.Best_decision_sim}}
+            </div>
+            {% csrf_token %}
+
+
+          <div class="">
+          <input type="submit" class="btnRegister"  value=" ارسال نظرات"/>
+          </div>
+        </form>
+  </div>
+</div>
+
+
+{% endblock %}

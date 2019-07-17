@@ -1,0 +1,420 @@
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+
+
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+  <link rel="stylesheet" href="{%static "CSS/main.css" %}">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <link rel="stylesheet" href={% static "route/leaflet-routing-machine.css" %} />
+</head>
+
+<style>
+    .map {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src={% static "route/leaflet-routing-machine.js" %}></script>
+    <script src={% static "dist/ors-js-client.js" %}></script>
+
+<div class="col float-left col-lg-8 col-sx-12 font-farsi">
+
+  <br>
+  <div id="mapid">
+{%verbatim%}
+
+    <script>
+
+      var mymap = L.map('mapid').setView([35.7125, 51.3995], 16);
+
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'sk.eyJ1IjoiZ29zaHRhc2Itc2hhaHJpYXJpIiwiYSI6ImNqcDA5N2xiMzJ0Z3AzcWtmeXBmNDB1ZGgifQ.uOkowgSJd7M1XVJuHOCONg'
+      }).addTo(mymap);
+
+
+
+
+      function onMapClick(e) {
+        var lat_lng = e.latlng
+        lat_lng = lat_lng.toString()
+        latitude = lat_lng.replace('LatLng(', '').replace(')', '').split(',')[0]
+        longitude = lat_lng.replace('LatLng(', '').replace(')', '').split(',')[1]
+
+      }
+
+      mymap.on('click', onMapClick);
+
+      var PersonIcon = L.icon({
+          iconUrl: 'http://chittagongit.com//images/google-maps-person-icon/google-maps-person-icon-6.jpg',
+
+          iconSize:     [30, 55], // size of the icon
+          shadowSize:   [50, 64], // size of the shadow
+          iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+          shadowAnchor: [4, 62],  // the same for the shadow
+          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+      });
+
+
+var user_coordinate_lat= new Number()
+var user_coordinate_lng= new Number()
+
+
+
+
+      var lat_store = new Number()
+      var lng_store= new Number()
+      var markersLayer = new L.LayerGroup();
+      $(document).on('click', '.geo', function () {
+
+        var store_code =( $(".store_code_geo").eq($(this).index()).text())
+        user_coordinate_lat=($(".u_coordinates").eq($(this).index()).text().split(','))[0]
+        user_coordinate_lng=($(".u_coordinates").eq($(this).index()).text().split(','))[1]
+        lat_store = ($(".s_coordinates").eq($(this).index()).text().split(','))[0]
+        lng_store =  ($(".s_coordinates").eq($(this).index()).text().split(','))[1]
+
+        // var marker= L.marker([lat_store,lng_store]).addTo(mymap).bindPopup("<b>store  "+ store_code +"  coordinates: </b></br>"+lat_store+' , '+lng_store);
+        // var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: PersonIcon}).addTo(mymap).bindPopup("<b>user's coordinates:</b></br>"+user_coordinate_lat+' , '+user_coordinate_lng);
+
+      var routing=L.Routing.control({
+          waypoints: [
+              L.latLng(user_coordinate_lat, user_coordinate_lng),
+                L.latLng(lat_store, lng_store),
+          ],
+          routeWhileDragging: true
+      }).addTo(mymap);
+
+
+
+
+
+
+
+      });
+
+
+      $(document).on('click', '.similarity', function () {
+
+        var store_code =( $(".store_code_similarity").eq($(this).index()).text())
+        user_coordinate_lat=($(".u_coordinates").eq($(this).index()).text().split(','))[0]
+        user_coordinate_lng=($(".u_coordinates").eq($(this).index()).text().split(','))[1]
+        lat_store = ($(".s_coordinates").eq($(this).index()).text().split(','))[0]
+        lng_store =  ($(".s_coordinates").eq($(this).index()).text().split(','))[1]
+
+        // var marker= L.marker([lat_store,lng_store]).addTo(mymap).bindPopup("<b>store  "+ store_code +"  coordinates: </b></br>"+lat_store+' , '+lng_store);
+        // var per_marker=L.marker([user_coordinate_lat,user_coordinate_lng ], {icon: PersonIcon}).addTo(mymap).bindPopup("<b>user's coordinates:</b></br>"+user_coordinate_lat+' , '+user_coordinate_lng);
+
+      var routing=L.Routing.control({
+          waypoints: [
+              L.latLng(user_coordinate_lat, user_coordinate_lng),
+                L.latLng(lat_store, lng_store),
+          ],
+          routeWhileDragging: true
+      }).addTo(mymap);
+
+
+
+
+
+
+
+      });
+
+
+
+
+
+    </script>
+{% endverbatim %}
+  </div>
+
+
+</div>
+
+<div class="col col-lg-4 col-sx-12  float-right justify-content-md-center">
+  <br>
+  {% if request.get_full_path == "/query%201/" %}
+  <img src="https://pakook.com/Uploading/Banner/L1111111_download.jpg" alt="..." style="display: block; margin-left: auto; margin-right: auto; width: 40%;">
+  {% endif %}
+  {% if request.get_full_path == "/query%202/" %}
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFd-z_DF_wvQ9382iSWsBKdwRtlx9f1jaxiR30YOtq4jBIZtf6sg" alt="..." style="display: block; margin-left: auto; margin-right: auto; width: 40%;">
+  {% endif %}
+  {% if request.get_full_path == "/query%203/" %}
+  <img src="https://images-na.ssl-images-amazon.com/images/G/01/gno/SiteDirectory/SD_exports_automotive1x._CB470927259_.png" alt="..." style="display: block; margin-left: auto; margin-right: auto; width: 40%;">
+  {% endif %}
+  {% if request.get_full_path == "/query%204/" %}
+  <img src="https://images-na.ssl-images-amazon.com/images/G/01/gno/SiteDirectory/SD_exports_beautypersonalcare_1x._CB470927258_.png" alt="..." style="display: block; margin-left: auto; margin-right: auto; width: 40%;">
+  {% endif %}
+
+
+
+
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link" id="nav-final-tab" data-toggle="tab" href="#nav-final" role="tab" aria-controls="nav-final" aria-selected="true" style="font-size:20px;">Final Sorting</a>
+      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"style="font-size:20px;">Similarity Distance</a>
+      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true" style="font-size:20px;">Geographic Distance</a>
+
+    </div>
+
+    <div class="tab-content " id="nav-tabContent">
+      <div class="tab-pane fade  show active " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+        <ul class="list-group">
+          {% for items1,items2,items3,items4 in store_feature %}
+
+
+                    <li class="list-group-item similarity btn-dark" >
+
+          <div class="all-list" >
+            <!-- <div class="picture">
+                <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
+            </div> -->
+            <div class="">
+              <a href="{% url 'query' num=items1 %}" class="detail">Store Detail</a>
+
+            </div>
+
+
+</div>
+
+
+  <div class="percentage">
+    <p style=" font-size:10px; color:green;"><span style="font-size:10px;"> Similarity Percentage Between User & Store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="similarity_user_store" style="font-size:24px;">{{items2}} </span>  %</p>
+  </div>
+  <div class="store_id">
+    <p style="font-size:30px;  color:#4E4E50"> <span>Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_similarity">{{items1}}</span>
+    </p>
+
+
+  </div>
+
+
+
+
+                </li>
+
+          {% endfor %}
+        </ul>
+
+
+
+      </div>
+      <div class="tab-pane fade " id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+        <ul class="list-group">
+
+          {% for item1,item2 in store_code_distance %}
+
+          <li class="list-group-item geo btn-dark" >
+            <div class="all-list">
+
+
+<!-- <div class="picture">
+  <img  class="" src="{% static "media/store_sample.jpg" %}" alt="" width="100px" height="80px">
+
+</div> -->
+
+
+</div>
+<div class="store_id">
+  <p   class="" style="font-size:30px; color:#4E4E50"> <span >Store ID:&nbsp;&nbsp;&nbsp;</span><span class="store_code_geo" id="store_id_code">{{item1}}</span>
+  </p>
+
+</div>
+
+<div class="Percentage">
+  <p class=""style="font-size:10px; color:green;"> <span style="font-size:10px;" class="align-bottom"> Distance between user & this store:&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class = "distance_store_user "  style="font-size:24px;">{{item2}}</span style="font-size:20px;"><span>Meter</span> </p>
+
+</div>
+
+      </li>
+
+          {% endfor %}
+
+
+
+          {% for lat,lng in store_coordinates %}
+
+          <li class="list-group-item s_coordinates" style="display:none;">{{lat}},{{lng}}</li>
+
+
+          {% endfor %}
+
+
+
+
+
+            {% for lat1,lng1 in user_coordinates %}
+
+            <li class="list-group-item u_coordinates" style="display:none;">{{lat1}},{{lng1}}</li>
+
+
+            {% endfor %}
+        </ul>
+
+
+      </div>
+
+
+      <div class="tab-pane fade " id="nav-final" role="tabpanel" aria-labelledby="nav-final-tab">
+        <ul class="list-group ul-final">
+
+
+
+
+        </ul>
+
+
+      </div>
+
+    </div>
+</div>
+{% verbatim %}
+<script type="text/javascript">
+  $(document).ready(function() {
+ const buffer = 1500
+    $(document).on('input', '#formControlRange', function() {
+        $('#slider_value').html( $(this).val() );
+    });
+
+    function sort_Function(final_distance_geo_sim_integrated) {
+      final_distance_geo_sim_integrated.sort(function(a, b) {
+        return a - b
+      });
+
+    }
+    var $curr = $("ul-final");
+
+    var geo_weight = new Number();
+    var sim_weight = new Number();
+
+    $('#submit_form').click(function(e) {
+      $('li').remove(".final");
+
+      e.preventDefault()
+
+      geo_weight = $('#input_geo_dist_weight').val();
+      sim_weight = $('#input_similarity_weight').val();
+
+
+      var similarity_list = new Array()
+      $('.similarity').each(function(index) {
+        similarity_list.push($(".store_code_similarity").eq($(this).index()).text())
+        similarity_list.push(($(".similarity_user_store").eq($(this).index()).text())/100)
+      });
+
+  var geo_dist_list = new Array();
+      $('.geo').each(function(index) {
+        geo_dist_list.push($(".store_code_geo").eq($(this).index()).text()),
+          geo_dist_list.push($(".distance_store_user").eq($(this).index()).text())
+
+      });
+
+      var distance_list_without_store_code=new Array()
+      for (var i = 0, l = geo_dist_list.length; i < l; i+=2) {
+      distance_list_without_store_code.push(geo_dist_list[i+1])
+      }
+      maximum_distance=Math.max.apply(Math,distance_list_without_store_code);
+
+
+      var normal_between_zero_one = new Array()
+for (var i = 0; i < geo_dist_list.length; i+=2) {
+var value= geo_dist_list[i+1]
+
+value = value/maximum_distance
+value = 1-value
+normal_between_zero_one.push(geo_dist_list[i])
+normal_between_zero_one.push(value)
+
+}
+
+
+
+      var final_list = new Array()
+      var final_distance_geo_sim_integrated = new Array()
+      var sorted_final_distance = new Array()
+      for (var i = 0, l = similarity_list.length; i < l; i++) {
+        for (var j = 0; j < normal_between_zero_one.length; j++) {
+
+          if (normal_between_zero_one[j] == similarity_list[i]) {
+            // console.log(similarity_list[i + 1]);
+            // console.log(geo_dist_list[j + 1]);
+            final_list.push(similarity_list[i]);
+            final_list.push(normal_between_zero_one[j + 1] * geo_weight + similarity_list[i + 1] * sim_weight);
+            final_distance_geo_sim_integrated.push(final_list[i + 1]);
+            final_distance_geo_sim_integrated.sort(function(a, b) {
+              return b - a
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+          }
+
+        }
+      }
+
+      for (var i = 0; i < final_distance_geo_sim_integrated.length; i++) {
+        for (var j = 0; j < final_list.length; j++) {
+          if (final_distance_geo_sim_integrated[i] == final_list[j + 1]) {
+            sorted_final_distance.push(final_list[j]);
+            sorted_final_distance.push(final_distance_geo_sim_integrated[i])
+
+
+          }
+        }
+      }
+
+
+
+      var tuple_from_final_sorted = new Array()
+      var tuple2_from_final_sorted = new Array()
+      for (var i = 0; i < sorted_final_distance.length; i += 2) {
+        tuple_from_final_sorted.push(sorted_final_distance[i]);
+        $(".ul-final").append("<li class='list-group-item final_list btn-dark' style=' text-align: center; color:#4E4E50; font-size:30px;'>" +"Store ID:  "+  sorted_final_distance[i] + "</li>");
+
+        tuple2_from_final_sorted.push(tuple_from_final_sorted.join());
+      }
+
+
+
+
+
+    });
+
+
+    console.log('-------*****----');
+
+
+
+  });
+</script>
+
+
+<script type="text/javascript">
+
+</script>
+{% endverbatim %}
+
+
+
+{% endblock %}
